@@ -3,42 +3,45 @@ import { CardRestaurants } from "../components/fragments/CardRestaurants";
 import { Header } from "../components/fragments/Header";
 import axios from "axios";
 
+type Restaurant = {
+    id: string;
+    restoName: string;
+    image: string;
+    categories: string;
+    status: boolean;
+    price: number;
+    rating: number;
+};
+
 export const HomePage = () => {
-    const [allResto, setAllResto] = useState([]);
-    const [filteredResto, setFilteredResto] = useState([]);
-    const [visibleResto, setVisibleResto] = useState([]);
+    const [allResto, setAllResto] = useState<Restaurant[]>([]);
+    const [filteredResto, setFilteredResto] = useState<Restaurant[]>([]);
+    const [visibleResto, setVisibleResto] = useState<Restaurant[]>([]);
     const [openNow, setOpenNow] = useState(false);
     const [priceRange, setPriceRange] = useState("");
-    const [category, setCategory] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(true);
-
-
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
     const apiUrlResto = import.meta.env.VITE_API_URL_RESTAURANTS;
 
-    // Fetch semua data restaurants
     useEffect(() => {
-        setIsLoading(true)
+        setIsLoading(true);
         axios
             .get(`${apiUrlResto}/restaurants`)
             .then((res) => {
                 setAllResto(res.data);
-                console.log('respon data:', res.data);
                 setFilteredResto(res.data);
                 setVisibleResto(res.data.slice(0, itemsPerPage));
-                setIsLoading(false)
-
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.error(error);
-                setIsLoading(false)
+                setIsLoading(false);
             });
-    }, []);
+    }, [apiUrlResto]);
 
-    // filter client-side (Open Now & Price)
     useEffect(() => {
         let filtered = allResto;
 
@@ -48,7 +51,9 @@ export const HomePage = () => {
 
         if (priceRange) {
             const range = priceRange.split("-").map((p) => parseInt(p.trim()));
-            filtered = filtered.filter((item) => item.price >= range[0] && item.price <= range[1]);
+            filtered = filtered.filter(
+                (item) => item.price >= range[0] && item.price <= range[1]
+            );
         }
 
         if (filtered.length === 0) {
@@ -62,9 +67,7 @@ export const HomePage = () => {
         setVisibleResto(filtered.slice(0, itemsPerPage));
     }, [openNow, priceRange, allResto]);
 
-    // Fetch data restaurants untuk filter category (server-side)
-    const handleCategoryChange = (selectedCategory) => {
-        setCategory(selectedCategory);
+    const handleCategoryChange = (selectedCategory: string) => {
         axios
             .get(`${apiUrlResto}/restaurants?categories=${selectedCategory}`)
             .then((res) => {
@@ -83,20 +86,17 @@ export const HomePage = () => {
             });
     };
 
-    // Load more item
     const handleLoadMore = () => {
-        setIsLoading(true)
+        setIsLoading(true);
 
         setTimeout(() => {
             const nextPage = currentPage + 1;
             const nextVisibleResto = filteredResto.slice(0, nextPage * itemsPerPage);
             setVisibleResto(nextVisibleResto);
             setCurrentPage(nextPage);
-            setIsLoading(false)
-        }, 500)
-
+            setIsLoading(false);
+        }, 500);
     };
-
 
     return (
         <>
@@ -107,7 +107,6 @@ export const HomePage = () => {
                 onClearFilters={() => {
                     setOpenNow(false);
                     setPriceRange("");
-                    setCategory("");
                     setFilteredResto(allResto);
                     setCurrentPage(1);
                     setVisibleResto(allResto.slice(0, itemsPerPage));
@@ -122,27 +121,20 @@ export const HomePage = () => {
                         <div className="text-center font-semibold mb-6">
                             <p>loading.....</p>
                         </div>
-                    )
-                        : (errorMessage && (
+                    ) : (
+                        errorMessage && (
                             <div className="text-center text-red-500 mb-6">
                                 <p>{errorMessage}</p>
                             </div>
-                        ))
-                    }
+                        )
+                    )}
 
                     <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-6">
-                        {
-
-                            visibleResto.map((item) => (
-                                <CardRestaurants key={item.id} {...item} />
-                            ))
-
-                        }
-
+                        {visibleResto.map((item) => (
+                            <CardRestaurants key={item.id} {...item} />
+                        ))}
                     </div>
 
-
-                    {/* Button Load More */}
                     {!errorMessage && visibleResto.length < filteredResto.length && (
                         <div className="flex justify-center">
                             <button
@@ -155,7 +147,7 @@ export const HomePage = () => {
                         </div>
                     )}
                 </section>
-            </main >
+            </main>
         </>
     );
 };
