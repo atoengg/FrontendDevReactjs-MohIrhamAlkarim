@@ -18,9 +18,9 @@ To deploy this project run
 ## Link Deployment
 
 ```bash
-  https://resto-fe-test.vercel.app/
+  https://resto-fe-test.netlify.app/
 ```
 
 ## Tech Stack
 
-**Client:** Node v20.18.1, React ^18.3.1, Vite, Typescript, TailwindCSS
+**Client:** Node v20.0.0, React v18.3.1, Vite, Typescript, TailwindCSS
