@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
-// import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 
 export const FormLogin = () => {
-    // const { login, isAuthenticated } = useAuth();
-    // const navigate = useNavigate();
+    const { login, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
     const [input, setInput] = useState({
         username: '',
@@ -18,12 +19,11 @@ export const FormLogin = () => {
 
     const [isFormValid, setIsFormValid] = useState(true);
 
-    // useEffect(() => {
-    //     if (isAuthenticated || localStorage.getItem("isAuthenticated") === "true") {
-    //         // Jika sudah login, arahkan ke halaman dashboard
-    //         navigate('/');
-    //     }
-    // }, [navigate]);
+    useEffect(() => {
+        if (isAuthenticated || localStorage.getItem("isAuthenticated") === "true") {
+            navigate('/home');
+        }
+    }, [navigate]);
 
     useEffect(() => {
         // memantau perubahan pada errMsg dan memperbarui isFormValid
@@ -75,14 +75,14 @@ export const FormLogin = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // const { username, password } = input
+        const { username, password } = input
 
-        // if (login(username, password)) {
-        //     localStorage.setItem("isAuthenticated", "true");
-        //     navigate('/dashboard')
-        // } else {
-        //     alert("Username atau password salah!");
-        // }
+        if (login(username, password)) {
+            localStorage.setItem("isAuthenticated", "true");
+            navigate('/home')
+        } else {
+            alert("Username atau password salah!");
+        }
 
     }
 
