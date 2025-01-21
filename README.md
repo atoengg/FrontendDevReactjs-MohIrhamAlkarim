@@ -1,4 +1,4 @@
-# Front End - Technical Test - Front End Developer
+# Technical Test - Front End Developer
 
 by Mohammad Irham Al Karim
 
